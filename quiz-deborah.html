@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Mio figlio fa fatica a scuola | Deborah Pintimalli</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --warm-white: #FFFDF9;
+    --sage: #7A9E87;
+    --sage-light: #A8C4B0;
+    --sage-dark: #4E7260;
+    --terracotta: #C4785A;
+    --terracotta-light: #E8A98E;
+    --charcoal: #2C2C2C;
+    --mid-grey: #7A7A7A;
+    --light-grey: #E8E4DF;
+    --border: #D6D0C8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--charcoal);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BACKGROUND TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(122,158,135,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 90%, rgba(196,120,90,0.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  .brand {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    margin-bottom: 24px;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 5vw, 38px);
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--charcoal);
+    margin-bottom: 16px;
+  }
+
+  .header h1 em {
+    font-style: italic;
+    color: var(--terracotta);
+  }
+
+  .header p {
+    font-size: 15px;
+    color: var(--mid-grey);
+    line-height: 1.7;
+    max-width: 500px;
+    margin: 0 auto;
+    font-weight: 300;
+  }
+
+  .divider {
+    width: 40px;
+    height: 2px;
+    background: var(--sage);
+    margin: 20px auto;
+    border-radius: 2px;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    margin-bottom: 36px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mid-grey);
+    font-weight: 500;
+  }
+
+  .progress-count {
+    font-size: 13px;
+    color: var(--sage-dark);
+    font-weight: 500;
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--light-grey);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sage), var(--sage-light));
+    border-radius: 3px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* SECTION LABEL */
+  .section-label {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    background: rgba(122,158,135,0.12);
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  /* QUESTION CARD */
+  .question-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 36px 32px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.3s forwards;
+  }
+
+  .question-number {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 12px;
+  }
+
+  .question-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(17px, 3vw, 21px);
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--charcoal);
+    margin-bottom: 28px;
+  }
+
+  /* OPTIONS */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--cream);
+  }
+
+  .option:hover {
+    border-color: var(--sage-light);
+    background: rgba(122,158,135,0.06);
+    transform: translateX(3px);
+  }
+
+  .option.selected {
+    border-color: var(--sage);
+    background: rgba(122,158,135,0.1);
+  }
+
+  .option-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .option.selected .option-dot {
+    border-color: var(--sage-dark);
+    background: var(--sage-dark);
+  }
+
+  .option.selected .option-dot::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+  }
+
+  .option-text {
+    font-size: 14px;
+    color: var(--charcoal);
+    line-height: 1.4;
+    font-weight: 400;
+  }
+
+  .option-score {
+    display: none;
+  }
+
+  /* NAVIGATION */
+  .nav {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.4s forwards;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 16px 24px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-back {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--mid-grey);
+    flex: 0 0 auto;
+    padding: 16px 20px;
+  }
+
+  .btn-back:hover {
+    border-color: var(--charcoal);
+    color: var(--charcoal);
+  }
+
+  .btn-next {
+    background: var(--sage-dark);
+    color: white;
+  }
+
+  .btn-next:hover:not(:disabled) {
+    background: var(--sage);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(78,114,96,0.3);
+  }
+
+  .btn-next:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .btn-result {
+    background: var(--terracotta);
+    color: white;
+  }
+
+  .btn-result:hover:not(:disabled) {
+    background: var(--terracotta-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(196,120,90,0.3);
+  }
+
+  .btn-result:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    font-size: 11px;
+    color: var(--mid-grey);
+    text-align: center;
+    line-height: 1.6;
+    margin-top: 20px;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.5s forwards;
+  }
+
+  /* RESULTS */
+  .result-screen {
+    display: none;
+    opacity: 0;
+  }
+
+  .result-screen.visible {
+    display: block;
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  .result-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .result-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  .result-badge.green { background: rgba(122,158,135,0.15); color: var(--sage-dark); }
+  .result-badge.yellow { background: rgba(196,160,90,0.15); color: #8a6d2a; }
+  .result-badge.red { background: rgba(196,120,90,0.15); color: var(--terracotta); }
+
+  .result-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(24px, 5vw, 34px);
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--charcoal);
+    margin-bottom: 12px;
+  }
+
+  .result-title em { font-style: italic; color: var(--terracotta); }
+
+  .result-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+  }
+
+  .result-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 14px;
+  }
+
+  .result-card p {
+    font-size: 15px;
+    line-height: 1.75;
+    color: #444;
+    font-weight: 300;
+    margin-bottom: 12px;
+  }
+
+  .result-card p:last-child { margin-bottom: 0; }
+
+  .signal-list {
+    list-style: none;
+    margin: 16px 0;
+  }
+
+  .signal-list li {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+    padding: 8px 0 8px 24px;
+    position: relative;
+    border-bottom: 1px solid var(--light-grey);
+    font-weight: 300;
+  }
+
+  .signal-list li:last-child { border-bottom: none; }
+
+  .signal-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--sage);
+    font-size: 13px;
+  }
+
+  .cta-card {
+    background: linear-gradient(135deg, var(--sage-dark) 0%, #3d5c4a 100%);
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    color: white;
+    margin-top: 24px;
+  }
+
+  .cta-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .cta-card p {
+    font-size: 14px;
+    opacity: 0.85;
+    line-height: 1.7;
+    margin-bottom: 24px;
+    font-weight: 300;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    background: white;
+    color: var(--sage-dark);
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  }
+
+  .score-bar-wrap {
+    margin: 20px 0;
+  }
+
+  .score-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--mid-grey);
+    margin-bottom: 6px;
+  }
+
+  .score-bar-track {
+    height: 6px;
+    background: var(--light-grey);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.4s;
+  }
+
+  .score-bar-fill.green { background: linear-gradient(90deg, var(--sage), var(--sage-light)); }
+  .score-bar-fill.yellow { background: linear-gradient(90deg, #c4a85a, #e0c87a); }
+  .score-bar-fill.red { background: linear-gradient(90deg, var(--terracotta), var(--terracotta-light)); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .quiz-screen { }
+
+  /* MOBILE */
+  @media (max-width: 480px) {
+    .question-card { padding: 24px 20px; }
+    .result-card { padding: 24px 20px; }
+    .cta-card { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header" id="quizHeader">
+    <div class="brand">Deborah Pintimalli · Coach & Psicologa</div>
+    <h1>Mio figlio fa fatica a scuola —<br>è <em>normale</em> o c'è qualcosa in più?</h1>
+    <div class="divider"></div>
+    <p>12 domande clinicamente orientate per aiutarti a capire cosa sta vivendo tuo figlio — e cosa puoi fare adesso.</p>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div class="quiz-screen" id="quizScreen">
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span class="progress-label">Progresso</span>
+        <span class="progress-count" id="progressCount">1 di 12</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 8%"></div>
+      </div>
+    </div>
+
+    <div class="question-card" id="questionCard">
+      <div class="section-label" id="sectionLabel"></div>
+      <div class="question-number" id="questionNumber"></div>
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-back" id="btnBack" onclick="goBack()">← Indietro</button>
+      <button class="btn btn-next" id="btnNext" onclick="goNext()" disabled>Avanti →</button>
+    </div>
+
+    <p class="disclaimer">
+      Questo strumento non sostituisce una valutazione clinica professionale.<br>
+      I risultati sono orientativi e pensati per supportare il tuo percorso genitoriale.
+    </p>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div class="result-screen" id="resultScreen">
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  // SEZIONE 1: ATTENZIONE E CONCENTRAZIONE (ispirata Conners, ADHD Rating Scale)
+  {
+    section: "Attenzione & Concentrazione",
+    text: "Quando tuo figlio deve svolgere un compito che richiede attenzione sostenuta (leggere, scrivere, fare i compiti), riesce a mantenerla per almeno 20-30 minuti senza distrarsi o arrendersi?",
+    options: [
+      { text: "Sì, generalmente riesce senza difficoltà particolari", score: 0 },
+      { text: "A volte sì, dipende molto dall'umore e dall'argomento", score: 1 },
+      { text: "Difficilmente — si distrae spesso e ha bisogno di essere richiamato", score: 2 },
+      { text: "Quasi mai — è una fonte di conflitto quotidiano", score: 3 },
+    ]
+  },
+  {
+    section: "Attenzione & Concentrazione",
+    text: "Tuo figlio dimentica spesso materiale scolastico, istruzioni appena date, o perde oggetti necessari (quaderni, astucci, fogli)?",
+    options: [
+      { text: "Raramente — è abbastanza organizzato", score: 0 },
+      { text: "Qualche volta, ma non è un problema sistematico", score: 1 },
+      { text: "Spesso — devo ricordargli le cose più volte", score: 2 },
+      { text: "Quasi ogni giorno — è fonte di stress per tutta la famiglia", score: 3 },
+    ]
+  },
+  // SEZIONE 2: LETTURA E SCRITTURA (ispirata screening DSA, Cornoldi)
+  {
+    section: "Lettura & Scrittura",
+    text: "Come descriveresti il rapporto di tuo figlio con la lettura ad alta voce?",
+    options: [
+      { text: "Fluente, non fa errori particolari", score: 0 },
+      { text: "Qualche incertezza, ma in linea con l'età", score: 1 },
+      { text: "Lenta, con molti errori o omissioni di lettere/sillabe", score: 2 },
+      { text: "Molto faticosa — evita di leggere o si blocca spesso", score: 3 },
+    ]
+  },
+  {
+    section: "Lettura & Scrittura",
+    text: "Nei testi scritti di tuo figlio (dettati, temi, esercizi) noti frequentemente errori come lettere invertite, parole attaccate, omissione di lettere o apostrofi?",
+    options: [
+      { text: "No, scrive in modo corretto per la sua età", score: 0 },
+      { text: "Qualche errore occasionale, normale per l'età", score: 1 },
+      { text: "Sì, errori ricorrenti che gli insegnanti segnalano", score: 2 },
+      { text: "Sì, molti e frequenti — la scrittura è quasi illeggibile o incomprensibile", score: 3 },
+    ]
+  },
+  // SEZIONE 3: COMPORTAMENTO ED EMOZIONI (ispirata SDQ - Strengths and Difficulties Questionnaire)
+  {
+    section: "Comportamento & Emozioni",
+    text: "Come reagisce tuo figlio di fronte a frustrazioni o compiti difficili (errori, correzioni, insuccessi scolastici)?",
+    options: [
+      { text: "Con relativa calma — accetta la difficoltà e riprova", score: 0 },
+      { text: "Con qualche protesta, ma si regola abbastanza rapidamente", score: 1 },
+      { text: "Con forte frustrazione — piange, si arrabbia, si blocca", score: 2 },
+      { text: "Con reazioni molto intense — crisi, rifiuto totale, aggressività verbale o fisica", score: 3 },
+    ]
+  },
+  {
+    section: "Comportamento & Emozioni",
+    text: "Tuo figlio mostra segni di ansia legata alla scuola: mal di pancia la mattina, paura di interrogazioni, rifiuto di andare a scuola, pianto anticipatorio?",
+    options: [
+      { text: "No, va a scuola serenamente", score: 0 },
+      { text: "Qualche volta in periodi di verifica, ma rientra nella norma", score: 1 },
+      { text: "Spesso — l'ansia scolastica è presente e visibile", score: 2 },
+      { text: "Quasi ogni giorno — è un problema significativo", score: 3 },
+    ]
+  },
+  // SEZIONE 4: APPRENDIMENTO E METODO (ispirata valutazioni cognitive, test MT)
+  {
+    section: "Apprendimento & Metodo",
+    text: "Quante ore dedica mediamente tuo figlio ai compiti a casa rispetto ai suoi compagni (per quanto ne sai)?",
+    options: [
+      { text: "Simile o meno dei compagni — è abbastanza efficiente", score: 0 },
+      { text: "Un po' di più, ma non è un problema enorme", score: 1 },
+      { text: "Molto di più — i compiti durano il doppio o il triplo", score: 2 },
+      { text: "Tantissimo o pochissimo — si esaurisce o si rifiuta di farli", score: 3 },
+    ]
+  },
+  {
+    section: "Apprendimento & Metodo",
+    text: "Tuo figlio riesce a trasferire quello che ha imparato in un contesto (a casa con te) in un altro contesto (interrogazione in classe)?",
+    options: [
+      { text: "Sì, generalmente sa quello che ha studiato anche in classe", score: 0 },
+      { text: "Abbastanza — qualche volta va in bianco ma non è sistematico", score: 1 },
+      { text: "Spesso va in bianco — a casa sembra sapere tutto, in classe dimentica", score: 2 },
+      { text: "Quasi sempre — l'ansia o la pressione bloccano il recupero delle informazioni", score: 3 },
+    ]
+  },
+  // SEZIONE 5: RELAZIONI SOCIALI (ispirata SDQ, scala relazioni tra pari)
+  {
+    section: "Relazioni & Autostima",
+    text: "Come sono le relazioni di tuo figlio con i compagni di scuola?",
+    options: [
+      { text: "Ha amici, si relaziona bene, nessun problema particolare", score: 0 },
+      { text: "Qualche difficoltà occasionale, ma ha almeno un amico stabile", score: 1 },
+      { text: "Fatica a inserirsi — viene escluso o preferisce stare da solo", score: 2 },
+      { text: "Grandi difficoltà relazionali — conflitti frequenti o isolamento", score: 3 },
+    ]
+  },
+  {
+    section: "Relazioni & Autostima",
+    text: "Tuo figlio esprime spesso frasi come 'sono stupido', 'sono il peggiore della classe', 'non sono capace', 'non ci riuscirò mai'?",
+    options: [
+      { text: "No, ha una buona percezione di sé", score: 0 },
+      { text: "Qualche volta, in momenti di difficoltà — ma non è costante", score: 1 },
+      { text: "Spesso — ha una bassa autostima scolastica visibile", score: 2 },
+      { text: "Quasi ogni giorno — queste frasi sono diventate parte del suo modo di parlarsi", score: 3 },
+    ]
+  },
+  // SEZIONE 6: VISSUTO DEL GENITORE (fondamentale nel coaching genitoriale)
+  {
+    section: "Il tuo vissuto di genitore",
+    text: "Come ti senti tu quando devi seguire tuo figlio nei compiti o nelle attività scolastiche?",
+    options: [
+      { text: "Abbastanza serena — ci sono difficoltà ma le gestiamo", score: 0 },
+      { text: "A volte stanca o frustrata, ma reggo bene", score: 1 },
+      { text: "Spesso esausta o in colpa — sento che non basto mai", score: 2 },
+      { text: "Allo stremo — è fonte di conflitto quotidiano e mi sento sola in questo", score: 3 },
+    ]
+  },
+  {
+    section: "Il tuo vissuto di genitore",
+    text: "Hai già parlato con gli insegnanti o con un professionista delle difficoltà di tuo figlio?",
+    options: [
+      { text: "Sì, e ho ricevuto risposte chiare e strumenti utili", score: 0 },
+      { text: "Sì, ma le risposte erano vaghe o contraddittorie", score: 1 },
+      { text: "Ne ho parlato ma non so ancora bene cosa fare con le informazioni ricevute", score: 2 },
+      { text: "No, o non so da dove cominciare", score: 3 },
+    ]
+  },
+];
+
+// SECTION SCORES for sub-analysis
+const sectionMap = {
+  "Attenzione & Concentrazione": [],
+  "Lettura & Scrittura": [],
+  "Comportamento & Emozioni": [],
+  "Apprendimento & Metodo": [],
+  "Relazioni & Autostima": [],
+  "Il tuo vissuto di genitore": []
+};
+
+let current = 0;
+let answers = new Array(questions.length).fill(null);
+
+function init() {
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  
+  document.getElementById('sectionLabel').textContent = q.section;
+  document.getElementById('questionNumber').textContent = `Domanda ${current + 1}`;
+  document.getElementById('questionText').textContent = q.text;
+  
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  
+  q.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option' + (answers[current] === i ? ' selected' : '');
+    div.innerHTML = `
+      <div class="option-dot"></div>
+      <span class="option-text">${opt.text}</span>
+    `;
+    div.onclick = () => selectOption(i);
+    container.appendChild(div);
+  });
+
+  // Update progress
+  const progress = ((current + 1) / questions.length) * 100;
+  document.getElementById('progressFill').style.width = progress + '%';
+  document.getElementById('progressCount').textContent = `${current + 1} di ${questions.length}`;
+
+  // Update button
+  const btnNext = document.getElementById('btnNext');
+  const isLast = current === questions.length - 1;
+  btnNext.textContent = isLast ? 'Scopri il risultato →' : 'Avanti →';
+  btnNext.className = 'btn ' + (isLast ? 'btn-result' : 'btn-next');
+  btnNext.disabled = answers[current] === null;
+
+  // Back button
+  document.getElementById('btnBack').style.display = current === 0 ? 'none' : 'block';
+
+  // Animate card
+  const card = document.getElementById('questionCard');
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = 'fadeUp 0.5s ease forwards';
+  card.style.opacity = '1';
+}
+
+function selectOption(index) {
+  answers[current] = index;
+  document.querySelectorAll('.option').forEach((el, i) => {
+    el.classList.toggle('selected', i === index);
+  });
+  const isLast = current === questions.length - 1;
+  const btnNext = document.getElementById('btnNext');
+  btnNext.disabled = false;
+}
+
+function goNext() {
+  if (answers[current] === null) return;
+  if (current === questions.length - 1) {
+    showResult();
+  } else {
+    current++;
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function goBack() {
+  if (current > 0) {
+    current--;
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function showResult() {
+  // Calculate total score
+  let total = 0;
+  answers.forEach((ans, i) => {
+    if (ans !== null) total += questions[i].options[ans].score;
+  });
+
+  // Section scores
+  const secScores = {};
+  questions.forEach((q, i) => {
+    if (!secScores[q.section]) secScores[q.section] = 0;
+    if (answers[i] !== null) secScores[q.section] += questions[i].options[answers[i]].score;
+  });
+
+  const maxScore = questions.length * 3; // 36
+  const pct = Math.round((total / maxScore) * 100);
+
+  // Hide quiz
+  document.getElementById('quizHeader').style.display = 'none';
+  document.getElementById('quizScreen').style.display = 'none';
+
+  const resultEl = document.getElementById('resultScreen');
+  resultEl.classList.add('visible');
+
+  let profile, badgeClass, content;
+
+  if (total <= 10) {
+    profile = "green";
+    badgeClass = "green";
+    content = buildResult({
+      badge: "Profilo Verde · Situazione nella norma",
+      badgeClass: "green",
+      title: "Tuo figlio mostra un profilo <em>sostanzialmente nella norma</em>",
+      pct,
+      barClass: "green",
+      intro: `Il punteggio complessivo (${total}/36) indica che le difficoltà che osservi rientrano nella variabilità tipica dello sviluppo. Questo non significa che non esistano momenti di fatica — esistono per tutti i bambini — ma non emergono segnali che richiedano una valutazione clinica urgente.`,
+      body: `È possibile che le difficoltà siano legate a un momento specifico (cambiamento di classe, nuova insegnante, periodo di stress familiare) oppure a uno stile di apprendimento che non è ancora stato valorizzato pienamente a scuola.`,
+      signals: buildSignals(secScores, "green"),
+      cta: {
+        title: "Cosa puoi fare adesso",
+        text: "Anche quando tutto va bene, capire meglio come funziona tuo figlio è un investimento. Una call conoscitiva gratuita può aiutarti a capire se e come supportarlo al meglio.",
+        btn: "Prenota una call gratuita con Deborah"
+      }
+    });
+
+  } else if (total <= 22) {
+    profile = "yellow";
+    badgeClass = "yellow";
+    content = buildResult({
+      badge: "Profilo Giallo · Segnali da approfondire",
+      badgeClass: "yellow",
+      title: "Emergono alcuni segnali che <em>meritano attenzione</em>",
+      pct,
+      barClass: "yellow",
+      intro: `Il punteggio complessivo (${total}/36) indica una zona intermedia: non tutto è nella norma, ma non siamo in presenza di un quadro clinico conclamato. Ci sono aree specifiche dove tuo figlio mostra difficoltà ricorrenti che, se non supportate bene, possono diventare più significative nel tempo.`,
+      body: `Questo profilo è molto comune — e spesso è quello dove i genitori si sentono più confusi, perché "non è abbastanza grave da preoccuparsi, ma abbastanza da non star bene". Quella sensazione è reale, e ha senso darle ascolto.`,
+      signals: buildSignals(secScores, "yellow"),
+      cta: {
+        title: "Il passo giusto adesso",
+        text: "Con un profilo come questo, un confronto con una professionista può fare una differenza enorme: capire cosa sta succedendo davvero, e costruire una strategia concreta per te e per tuo figlio.",
+        btn: "Parliamone — prima call gratuita"
+      }
+    });
+
+  } else {
+    profile = "red";
+    badgeClass = "red";
+    content = buildResult({
+      badge: "Profilo Rosso · Richiede attenzione professionale",
+      badgeClass: "red",
+      title: "Il quadro che emerge <em>richiede supporto professionale</em>",
+      pct,
+      barClass: "red",
+      intro: `Il punteggio complessivo (${total}/36) indica difficoltà significative e diffuse in più aree. Questo non è un giudizio su di te come genitore — è un dato che ti dice che tuo figlio ha bisogno di supporto specializzato, e che probabilmente anche tu potresti beneficiare di un affiancamento.`,
+      body: `Se sei arrivata a compilare questo quiz, probabilmente sai già che qualcosa non va e stai cercando conferme o una direzione. Hai fatto bene a cercarla. Il primo passo più importante che puoi fare adesso è parlare con qualcuno che conosce davvero questo territorio.`,
+      signals: buildSignals(secScores, "red"),
+      cta: {
+        title: "Non devi affrontare questo da sola",
+        text: "Lavoro con famiglie esattamente come la tua. La prima call è gratuita, senza impegno, e serve solo a capire insieme di cosa hai bisogno.",
+        btn: "Scrivimi — prima call gratuita"
+      }
+    });
+  }
+
+  resultEl.innerHTML = content;
+
+  // Animate score bar after render
+  setTimeout(() => {
+    const fill = document.querySelector('.score-bar-fill');
+    if (fill) fill.style.width = pct + '%';
+  }, 100);
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function buildSignals(secScores, profile) {
+  const highSections = Object.entries(secScores)
+    .filter(([k, v]) => v >= 3)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  if (highSections.length === 0) return '<li>Nessuna area critica emersa — il profilo è equilibrato.</li>';
+
+  return highSections.map(([section, score]) => {
+    const max = section === "Il tuo vissuto di genitore" ? 6 : 6;
+    const descriptions = {
+      "Attenzione & Concentrazione": "Le difficoltà di attenzione sono tra i segnali più frequenti nei bambini con DSA e ADHD. Non indicano mancanza di impegno — indicano un sistema neurobiologico che ha bisogno di strategie diverse.",
+      "Lettura & Scrittura": "Le difficoltà nella lettura e scrittura possono indicare una dislessia o disortografia, disturbi molto gestibili con il giusto supporto — ma che richiedono una valutazione clinica per essere confermati.",
+      "Comportamento & Emozioni": "Le reazioni emotive intense o l'ansia scolastica sono spesso la risposta a una fatica cognitiva non riconosciuta. Il bambino non è 'difficile' — sta comunicando in modo visibile un disagio interno.",
+      "Apprendimento & Metodo": "Le difficoltà nel metodo di studio e nel trasferimento delle conoscenze sono tipiche di profili cognitivi specifici che beneficiano enormemente di strategie personalizzate.",
+      "Relazioni & Autostima": "L'autostima scolastica bassa è spesso la conseguenza, non la causa, delle difficoltà di apprendimento. Intervenire presto su questo aspetto è fondamentale per prevenire conseguenze a lungo termine.",
+      "Il tuo vissuto di genitore": "Il tuo esaurimento conta quanto le difficoltà di tuo figlio. Un genitore supportato supporta meglio — e questo non è egoismo, è la condizione minima per reggere."
+    };
+    return `<li><strong>${section}</strong> — ${descriptions[section] || ''}</li>`;
+  }).join('');
+}
+
+function buildResult({ badge, badgeClass, title, pct, barClass, intro, body, signals, cta }) {
+  return `
+    <div class="result-header">
+      <div class="result-badge ${badgeClass}">${badge}</div>
+      <h1 class="result-title">${title}</h1>
+    </div>
+
+    <div class="result-card">
+      <h3>Il tuo punteggio complessivo</h3>
+      <div class="score-bar-wrap">
+        <div class="score-bar-label">
+          <span>Nella norma</span>
+          <span>Attenzione necessaria</span>
+        </div>
+        <div class="score-bar-track">
+          <div class="score-bar-fill ${barClass}" style="width: 0%"></div>
+        </div>
+      </div>
+      <p>${intro}</p>
+      <p>${body}</p>
+    </div>
+
+    <div class="result-card">
+      <h3>Le aree che emergono dalla tua risposta</h3>
+      <ul class="signal-list">
+        ${signals}
+      </ul>
+    </div>
+
+    <div class="result-card">
+      <h3>Una cosa importante prima di tutto</h3>
+      <p>Questo quiz è uno strumento orientativo, non una diagnosi. I punteggi sono costruiti sulla struttura di strumenti standardizzati validati (Conners Rating Scale, SDQ, screening MT), ma non sostituiscono una valutazione clinica condotta da un professionista.</p>
+      <p>Quello che può fare adesso è usare questi risultati come punto di partenza per una conversazione — con la scuola, con il pediatra, o con una professionista specializzata.</p>
+    </div>
+
+    <div class="cta-card">
+      <h3>${cta.title}</h3>
+      <p>${cta.text}</p>
+      <button class="cta-btn" onclick="alert('Inserisci qui il link al tuo calendario o alla tua pagina di prenotazione.')">
+        ${cta.btn}
+      </button>
+      <p style="margin-top: 16px; font-size: 12px; opacity: 0.6;">Deborah Pintimalli · Coach & Laureata Magistrale in Psicologia · Specialista in neurodivergenza</p>
+    </div>
+  `;
+}
+
+// Start
+init();
+</script>
+</body>
+</html>
